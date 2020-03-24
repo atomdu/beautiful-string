@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
+import android.text.ParcelableSpan;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -12,6 +13,9 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
+import android.text.style.URLSpan;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -22,31 +26,26 @@ import java.util.LinkedList;
  * TextView.setText(BeautifulString.get(Context,"content").build());
  */
 public class BeautifulString {
-    //Spanned.SPAN_INCLUSIVE_EXCLUSIVE 从起始下标到终了下标，包括起始下标
-    //Spanned.SPAN_INCLUSIVE_INCLUSIVE 从起始下标到终了下标，同时包括起始下标和终了下标
-    //Spanned.SPAN_EXCLUSIVE_EXCLUSIVE 从起始下标到终了下标，但都不包括起始下标和终了下标
-    //Spanned.SPAN_EXCLUSIVE_INCLUSIVE 从起始下标到终了下标，包括终了下标
-
+    ////BackgroundColorSpan : 文本背景色
+    ////ForegroundColorSpan : 文本颜色
     //what： 对应的各种Span，不同的Span对应不同的样式。已知的可用类有：
-    //BackgroundColorSpan : 文本背景色
-    //ForegroundColorSpan : 文本颜色
     //MaskFilterSpan : 修饰效果，如模糊(BlurMaskFilter)浮雕
     //RasterizerSpan : 光栅效果
+    ////StyleSpan : 字体样式：粗体、斜体等
     //StrikethroughSpan : 删除线
     //SuggestionSpan : 相当于占位符
-    //UnderlineSpan : 下划线
+    ////UnderlineSpan : 下划线
     //AbsoluteSizeSpan : 文本字体（绝对大小）
     //DynamicDrawableSpan : 设置图片，基于文本基线或底部对齐。
     //ImageSpan : 图片
     //RelativeSizeSpan : 相对大小（文本字体）
     //ScaleXSpan : 基于x轴缩放
-    //StyleSpan : 字体样式：粗体、斜体等
     //SubscriptSpan : 下标（数学公式会用到）
     //SuperscriptSpan : 上标（数学公式会用到）
     //TextAppearanceSpan : 文本外貌（包括字体、大小、样式和颜色）
-    //TypefaceSpan : 文本字体
-    //URLSpan : 文本超链接
-    //ClickableSpan : 点击事件
+    ////TypefaceSpan : 文本字体
+    ////URLSpan : 文本超链接
+    ////ClickableSpan : 点击事件
 
     public static final int MAX_LENGTH = -1; // 最大长度
 
@@ -314,6 +313,82 @@ public class BeautifulString {
     }
 
     /**
+     * 设置文字的背景色颜色
+     *
+     * @param color
+     * @param start
+     * @param end
+     * @return
+     */
+    public BeautifulString foregroundColor(String color, int start, int end, boolean isGlobal) {
+        ForegroundColorSpan span = new ForegroundColorSpan(Color.parseColor(color));
+        setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE, isGlobal);
+        return this;
+    }
+
+    /**
+     * 设置文字的背景色颜色
+     *
+     * @param color
+     * @param start
+     * @param end
+     * @return
+     */
+    public BeautifulString foregroundColor(String color, int start, int end) {
+        foregroundColor(color, start, end, false);
+        return this;
+    }
+
+    /**
+     * 设置文字的背景色颜色
+     *
+     * @param color
+     * @return
+     */
+    public BeautifulString foregroundColor(String color) {
+        foregroundColor(color, 0, items.getLast().end);
+        return this;
+    }
+
+    /**
+     * 设置文字的背景色颜色
+     *
+     * @param colorId
+     * @param start
+     * @param end
+     * @return
+     */
+    public BeautifulString foregroundColor(@ColorRes int colorId, int start, int end, boolean isGlobal) {
+        ForegroundColorSpan span = new ForegroundColorSpan(context.getResources().getColor(colorId));
+        setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE, isGlobal);
+        return this;
+    }
+
+    /**
+     * 设置文字的背景色颜色
+     *
+     * @param colorId
+     * @param start
+     * @param end
+     * @return
+     */
+    public BeautifulString foregroundColor(@ColorRes int colorId, int start, int end) {
+        backgroundColor(colorId, start, end, false);
+        return this;
+    }
+
+    /**
+     * 设置文字的背景色颜色
+     *
+     * @param colorId
+     * @return
+     */
+    public BeautifulString foregroundColor(@ColorRes int colorId) {
+        backgroundColor(colorId, 0, items.getLast().end);
+        return this;
+    }
+
+    /**
      * 设置文字的文字大小
      *
      * @param size
@@ -379,6 +454,88 @@ public class BeautifulString {
      */
     public BeautifulString style(int style) {
         style(style, 0, items.getLast().end);
+        return this;
+    }
+
+    /**
+     * @param
+     */
+    public BeautifulString type(String type, int start, int end, boolean isGlobal) {
+        TypefaceSpan span = new TypefaceSpan(type);
+        setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE, isGlobal);
+        return this;
+    }
+
+    /**
+     * @param
+     */
+    public BeautifulString type(String type, int start, int end) {
+        type(type, start, end, false);
+        return this;
+    }
+
+    /**
+     * @param
+     */
+    public BeautifulString type(String type) {
+        type(type, 0, items.getLast().end);
+        return this;
+    }
+
+
+    public BeautifulString underline(int start, int end, boolean isGlobal) {
+        UnderlineSpan span = new UnderlineSpan();
+        setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE, isGlobal);
+        return this;
+    }
+
+    public BeautifulString underline(int start, int end) {
+        underline(start, end, false);
+        return this;
+    }
+
+    public BeautifulString underline() {
+        underline(0, items.getLast().end);
+        return this;
+    }
+
+    /**
+     * @param url
+     */
+    public BeautifulString url(String url, int start, int end, boolean isGlobal) {
+        URLSpan span = new URLSpan(url);
+        setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE, isGlobal);
+        return this;
+    }
+
+    /**
+     * @param url
+     */
+    public BeautifulString url(String url, int start, int end) {
+        url(url, start, end, false);
+        return this;
+    }
+
+    /**
+     * @param url
+     */
+    public BeautifulString url(String url) {
+        url(url, 0, items.getLast().end);
+        return this;
+    }
+
+    public BeautifulString what(ParcelableSpan span, int start, int end, boolean isGlobal) {
+        setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE, isGlobal);
+        return this;
+    }
+
+    public BeautifulString what(ParcelableSpan span,  int start, int end) {
+        what(span, start, end, false);
+        return this;
+    }
+
+    public BeautifulString what(ParcelableSpan span) {
+        what(span, 0, items.getLast().end);
         return this;
     }
 
