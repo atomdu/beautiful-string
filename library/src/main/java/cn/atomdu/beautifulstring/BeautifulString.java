@@ -8,6 +8,7 @@ import android.text.ParcelableSpan;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -16,7 +17,9 @@ import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.LinkedList;
 
@@ -82,6 +85,10 @@ public class BeautifulString {
     public static BeautifulString get(Context context) {
         return new BeautifulString(context, "");
     }
+    public static BeautifulString get(TextView textView) {
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        return new BeautifulString(textView.getContext(), "");
+    }
 
     public static BeautifulString get(Context context, String str) {
         return new BeautifulString(context, str);
@@ -139,22 +146,29 @@ public class BeautifulString {
     }
 
     public SpannableString build() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder allText = new StringBuilder();
         for (Item item : items) {
-            sb.append(item.target);
+            allText.append(item.target);
         }
-        SpannableString ss = new SpannableString(sb.toString());
+        SpannableString ss = new SpannableString(allText.toString());
         for (Item item : items) {
             for (Style style : item.styles) {
+
+                StringBuilder lsb = new StringBuilder(item.target + ":").append(style.what.getClass().getSimpleName() + "==>");
+
                 if (style.end == MAX_LENGTH) {
                     if (style.isGlobal) {
-                        ss.setSpan(style.what, style.start, sb.length(), style.flags);
+                        ss.setSpan(style.what, style.start, allText.length(), style.flags);
+                        lsb.append(style.start + " " + allText.length());
                     } else {
                         ss.setSpan(style.what, style.start, item.globalStart + item.target.length(), style.flags);
+                        lsb.append(style.start + " " + (item.globalStart + item.target.length()));
                     }
                 } else {
                     ss.setSpan(style.what, style.start, style.end, style.flags);
+                    lsb.append(style.start + " " + style.end);
                 }
+                Log.d("beautiful string", lsb.toString());
             }
         }
         return ss;
@@ -529,7 +543,7 @@ public class BeautifulString {
         return this;
     }
 
-    public BeautifulString what(ParcelableSpan span,  int start, int end) {
+    public BeautifulString what(ParcelableSpan span, int start, int end) {
         what(span, start, end, false);
         return this;
     }
@@ -657,7 +671,9 @@ public class BeautifulString {
         @Override
         public void updateDrawState(TextPaint ds) {
             super.updateDrawState(ds);
-            ds.setUnderlineText(false);// 设置文字下划线不显示
+            ds.setUnderlineText(false); // 设置文字下划线不显示
+            ds.clearShadowLayer();      // 清除影子图层
+            //ds.setHighlightColor(trans);
             //ds.setColor(context.getResources().getColor(R.color.colorAccent));// 设置字体颜色
         }
     }
