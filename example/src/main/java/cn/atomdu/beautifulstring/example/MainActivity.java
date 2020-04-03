@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this,"click",Toast.LENGTH_SHORT).show();
                     }
                 })
-                .color(R.color.colorPrimary)
+                .color(R.color.colorAccent)
                 .build();
 
         textView.setText(ss);

@@ -85,6 +85,7 @@ public class BeautifulString {
     public static BeautifulString get(Context context) {
         return new BeautifulString(context, "");
     }
+
     public static BeautifulString get(TextView textView) {
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         return new BeautifulString(textView.getContext(), "");
@@ -556,8 +557,10 @@ public class BeautifulString {
     /**
      * 设置点击区域
      * <p>
-     * 如果要响应点击区域，需要TextView初始化的时候调用一下此方法
+     * 1.如果要响应点击区域，需要TextView初始化的时候调用一下此方法
      * TextView.setMovementMethod(LinkMovementMethod.getInstance())
+     * 2.onClick()方法要在append()方法之后最先调用，否则会覆盖其他方法的属性。
+     * </p>
      *
      * @param clickableSpan
      * @param start
@@ -572,8 +575,10 @@ public class BeautifulString {
     /**
      * 设置点击区域
      * <p>
-     * 如果要响应点击区域，需要TextView初始化的时候调用一下此方法
+     * 1.如果要响应点击区域，需要TextView初始化的时候调用一下此方法
      * TextView.setMovementMethod(LinkMovementMethod.getInstance())
+     * 2.onClick()方法要在append()方法之后最先调用，否则会覆盖其他方法的属性。
+     * </p>
      *
      * @param clickableSpan
      * @param start
@@ -588,8 +593,10 @@ public class BeautifulString {
     /**
      * 设置点击区域
      * <p>
-     * 如果要响应点击区域，需要TextView初始化的时候调用一下此方法
+     * 1.如果要响应点击区域，需要TextView初始化的时候调用一下此方法
      * TextView.setMovementMethod(LinkMovementMethod.getInstance())
+     * 2.onClick()方法要在append()方法之后最先调用，否则会覆盖其他方法的属性。
+     * </p>
      *
      * @param clickableSpan
      * @return
@@ -602,8 +609,10 @@ public class BeautifulString {
     /**
      * 设置点击区域
      * <p>
-     * 如果要响应点击区域，需要TextView初始化的时候调用一下此方法
+     * 1.如果要响应点击区域，需要TextView初始化的时候调用一下此方法
      * TextView.setMovementMethod(LinkMovementMethod.getInstance())
+     * 2.onClick()方法要在append()方法之后最先调用，否则会覆盖其他方法的属性。
+     * </p>
      *
      * @param onClickListener
      * @param start
@@ -611,15 +620,17 @@ public class BeautifulString {
      * @return
      */
     public BeautifulString onClick(View.OnClickListener onClickListener, int start, int end, boolean isGlobal) {
-        onClick(new Clickable(onClickListener), start, end, isGlobal);
+        onClick(new NoStateClickable(onClickListener), start, end, isGlobal);
         return this;
     }
 
     /**
      * 设置点击区域
      * <p>
-     * 如果要响应点击区域，需要TextView初始化的时候调用一下此方法
+     * 1.如果要响应点击区域，需要TextView初始化的时候调用一下此方法
      * TextView.setMovementMethod(LinkMovementMethod.getInstance())
+     * 2.onClick()方法要在append()方法之后最先调用，否则会覆盖其他方法的属性。
+     * </p>
      *
      * @param onClickListener
      * @param start
@@ -627,36 +638,38 @@ public class BeautifulString {
      * @return
      */
     public BeautifulString onClick(View.OnClickListener onClickListener, int start, int end) {
-        onClick(new Clickable(onClickListener), start, end);
+        onClick(new NoStateClickable(onClickListener), start, end);
         return this;
     }
 
     /**
      * 设置点击区域
      * <p>
-     * 如果要响应点击区域，需要TextView初始化的时候调用一下此方法
+     * 1.如果要响应点击区域，需要TextView初始化的时候调用一下此方法
      * TextView.setMovementMethod(LinkMovementMethod.getInstance())
+     * 2.onClick()方法要在append()方法之后最先调用，否则会覆盖其他方法的属性。
+     * </p>
      *
      * @param onClickListener
      * @return
      */
     public BeautifulString onClick(View.OnClickListener onClickListener) {
-        onClick(new Clickable(onClickListener), 0, items.getLast().end);
+        onClick(new NoStateClickable(onClickListener), 0, items.getLast().end);
         return this;
     }
 
     /**
      * 点击区域写法
      */
-    class Clickable extends ClickableSpan {
+    class NoStateClickable extends ClickableSpan {
         private final View.OnClickListener mListener;
         private Context context;
 
-        public Clickable(View.OnClickListener l) {
+        public NoStateClickable(View.OnClickListener l) {
             mListener = l;
         }
 
-        public Clickable(Context context, View.OnClickListener l) {
+        public NoStateClickable(Context context, View.OnClickListener l) {
             mListener = l;
         }
 
@@ -670,9 +683,9 @@ public class BeautifulString {
 
         @Override
         public void updateDrawState(TextPaint ds) {
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false); // 设置文字下划线不显示
-            ds.clearShadowLayer();      // 清除影子图层
+            //super.updateDrawState(ds);    // 默认有下划线
+            //ds.setUnderlineText(false);   // 设置文字下划线不显示
+            //ds.clearShadowLayer();        // 清除影子图层
             //ds.setHighlightColor(trans);
             //ds.setColor(context.getResources().getColor(R.color.colorAccent));// 设置字体颜色
         }
